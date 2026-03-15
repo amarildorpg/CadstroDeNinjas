@@ -20,7 +20,6 @@ public class NinjaModel {
     private Long id;
     @Column(name = "nome")
     private String nome;
-    @Column(name = "email")
     @Column(unique = true)
     private String email;
     @Column(name = "img_url")
