@@ -16,10 +16,16 @@ import java.util.List;
 public class NinjaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+    @Column(name = "nome")
     private String nome;
+    @Column(name = "email")
     @Column(unique = true)
     private String email;
+    @Column(name = "img_url")
+    private String imgUrl;
+    @Column(name = "idade")
     private int idade;
     @ManyToMany
     @JoinColumn(name = "missoes_id")
