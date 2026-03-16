@@ -25,18 +25,18 @@ public class NinjaController {
 
     //Procurar Ninja por ID (READ)
 
-    @GetMapping("/todosid")
+    @GetMapping("/todosID")
     public String todosOsNinjasPorId() {
         return "O ninja escolhido por ID";
     }
     //Alterar dados (UPDATE)
-    @PutMapping("/alterarid")
+    @PutMapping("/alterarID")
     public String alterarNinjaPorId() {
         return "O ninja escolhido por ID foi alterado";
     }
 
     //Deletar ninja (DELETE)
-    @DeleteMapping("/deletarid")
+    @DeleteMapping("/deletarID")
     public String deletarNinjaPorId() {
         return "O ninja escolhido por ID foi deletado";
     }
