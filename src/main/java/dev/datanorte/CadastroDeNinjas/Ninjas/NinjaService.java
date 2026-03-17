@@ -1,6 +1,5 @@
 package dev.datanorte.CadastroDeNinjas.Ninjas;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +8,13 @@ import java.util.Optional;
 @Service
 public class NinjaService {
     private NinjaRepository ninjaRepository;
-    public NinjaService(NinjaRepository ninjaRepository) {
+    private NinjaMapper ninjaMapper;
+
+    public NinjaService(NinjaRepository ninjaRepository, NinjaMapper ninjaMapper) {
         this.ninjaRepository = ninjaRepository;
+        this.ninjaMapper = ninjaMapper;
     }
+
     //Listar todos os meus ninjas
     public List<NinjaModel> listarNinjas() {
          return ninjaRepository.findAll();
@@ -24,8 +27,10 @@ public class NinjaService {
     }
 
     //criar um novo ninja
-    public NinjaModel criarNinja(NinjaModel ninja){
-        return ninjaRepository.save(ninja);
+    public NinjaDTO criarNinja(NinjaDTO ninjaDTO){
+        NinjaModel ninja = new  NinjaMapper().map(ninjaDTO);
+        ninja = ninjaRepository.save(ninja);
+        return ninjaMapper.map(ninja);
     }
 
     //Deletar um nija
