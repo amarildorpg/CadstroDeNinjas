@@ -1,7 +1,11 @@
 package dev.datanorte.CadastroDeNinjas.Ninjas;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,72 +14,126 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ninjas")
+@Tag(name = "Ninjas", description = "API para gerenciamento de ninjas")
 public class NinjaController {
-    private NinjaService ninjaService;
+
+    private final NinjaService ninjaService;
 
     public NinjaController(NinjaService ninjaService) {
         this.ninjaService = ninjaService;
     }
 
     @GetMapping("/boasVindas")
-    @Operation(summary = "Mensagem de Boas Vindas", description = "Essa rota da uma mensgem de boas vindas")
+    @Operation(
+            summary = "Mensagem de Boas Vindas",
+            description = "Retorna uma mensagem simples de boas-vindas da API"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mensagem retornada com sucesso")
+    })
     public String boasVindas() {
         return "Boas vindas";
     }
-    //Adicionar ninja (CREATE)
 
+    // CREATE
     @PostMapping("/criar")
-    @Operation(summary = "Cria um novo ninja essa rora", description = "Essa rota inclui um novo ninja")
-    @ApiResponses
+    @Operation(
+            summary = "Criar Ninja",
+            description = "Cria um novo ninja no sistema"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Ninja criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na requisição enviada")
+    })
     public ResponseEntity<String> criarNinja(@RequestBody NinjaDTO ninja) {
         NinjaDTO novoNinja = ninjaService.criarNinja(ninja);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Ninja Criada com sucesso: " + novoNinja.getNome());
+                .body("Ninja criado com sucesso: " + novoNinja.getNome());
     }
 
-    //Mostrar todos os ninjas (READ)
-
+    // READ - LISTAR TODOS
     @GetMapping("/listar")
+    @Operation(
+            summary = "Listar todos os Ninjas",
+            description = "Retorna uma lista com todos os ninjas cadastrados"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    })
     public ResponseEntity<List<NinjaDTO>> listarNinjas() {
         List<NinjaDTO> ninjas = ninjaService.listarNinjas();
         return ResponseEntity.ok(ninjas);
     }
 
-    //Procurar Ninja por ID (READ)
-
+    // READ - POR ID
     @GetMapping("/listar/{id}")
-    public ResponseEntity<?> listarNinjasPorId(@PathVariable Long id) {
+    @Operation(
+            summary = "Buscar Ninja por ID",
+            description = "Retorna um ninja específico baseado no ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ninja encontrado"),
+            @ApiResponse(responseCode = "404", description = "Ninja não encontrado")
+    })
+    public ResponseEntity<?> listarNinjasPorId(
+            @Parameter(description = "ID do ninja que será buscado")
+            @PathVariable Long id) {
+
         NinjaDTO ninja = ninjaService.listarNinjasPorId(id);
+
         if (ninja != null) {
             return ResponseEntity.ok(ninja);
-        }else  {
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Ninja não encontrado");
         }
     }
 
-    //Alterar dados (UPDATE)
+    // UPDATE
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<?> alterarNinjaPorId(@PathVariable Long id, @RequestBody NinjaDTO ninjaAlterado) {
-        NinjaDTO  ninja = ninjaService.atualizarNinja(id, ninjaAlterado);
+    @Operation(
+            summary = "Atualizar Ninja",
+            description = "Atualiza os dados de um ninja existente"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ninja atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Ninja não encontrado")
+    })
+    public ResponseEntity<?> alterarNinjaPorId(
+            @Parameter(description = "ID do ninja que será atualizado")
+            @PathVariable Long id,
+            @RequestBody NinjaDTO ninjaAlterado) {
+
+        NinjaDTO ninja = ninjaService.atualizarNinja(id, ninjaAlterado);
+
         if (ninja != null) {
-            return  ResponseEntity.ok(ninja);
-        }else {
+            return ResponseEntity.ok(ninja);
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Ninja não encontrado");
         }
     }
 
-    //Deletar ninja (DELETE)
+    // DELETE
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> deletarNinjaPorId(@PathVariable Long id) {
+    @Operation(
+            summary = "Deletar Ninja",
+            description = "Remove um ninja do sistema pelo ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ninja deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Ninja não encontrado")
+    })
+    public ResponseEntity<String> deletarNinjaPorId(
+            @Parameter(description = "ID do ninja que será deletado")
+            @PathVariable Long id) {
+
         if (ninjaService.deletarNinjaPorId(id)) {
-            ninjaService.deletarNinjaPorId(id);
-            return ResponseEntity.ok("Ninja Deletado com sucesso");
-        }else {
+            return ResponseEntity.ok("Ninja deletado com sucesso");
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("O ninja não foi localizado");
         }
     }
-
 }
